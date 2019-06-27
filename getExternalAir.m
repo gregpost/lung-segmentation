@@ -19,21 +19,21 @@ R=regionprops3(V,'BoundingBox','VoxelList');
 
 fprintf("External air segmentation...\n");
 
-oc=height(R);
+n=height(R);
 s=size(EAL);
-EA=logical(zeros(s(1),s(2),s(3)));
-for i=1:oc
+EA=zeros(s,'logical');
+for i=1:n
     x0=R(i,1).BoundingBox(1);
     y0=R(i,1).BoundingBox(2);
-    z0=R(i,1).BoundingBox(3);
     x1=x0+R(i,1).BoundingBox(4);
     y1=y0+R(i,1).BoundingBox(5);
-    if (x0 < 1 || x1 > s(1)-1 || y0 < 1 || y1 > s(2)-1 || z0 < 1)
+    if (x0 < 1 || x1 > s(1)-1 || y0 < 1 || y1 > s(2)-1)
         mat=cell2mat(R(i,2).VoxelList);
         ms=size(mat);
         for j=1:ms(1)
+            % This is not a mistake: 2,1,3 is the correct order.
             x=mat(j,2);
-            y=mat(j,1); %this is not a mistake: y=1,x=2
+            y=mat(j,1);
             z=mat(j,3);
             EA(x,y,z)=1;
         end
