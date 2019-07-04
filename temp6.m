@@ -1,14 +1,7 @@
-
-addpath("C:\Users\GregP\Documents\MATLAB\lung-segmentation");
-addpath("C:\Users\GregP\Documents\MATLAB\frangi_filter_version2a");
-addpath("C:\Users\GregP\Documents\MATLAB\bwdistsc");
-addpath("C:\Users\GregP\Documents\MATLAB\viewer3d_version12a\ReadData3D\dicom");
-addpath("C:\Users\GregP\Documents\MATLAB\phi-max-skeleton3d-matlab-18c7dc3");
-
-p1="C:\Users\GregP\Documents\MATLAB\binary\1_FISSIRES_KAZAKOVA"
+p1="C:\Users\GregP\Documents\MATLAB\binary\14_FISSURES_BOLDYREV";
 F=loadVoxelVolumeFromBinaryFile(p1);
 
-p2="D:\Tomograms\Chest_CT\PA000001\ST000001\SE000002";
+p2="D:\Tomograms\Chest_CT\PA000014\ST000001\SE000002";
 L=getRespiratoryOrgansFromDicomFolder(p2);
 E=dilate(L,3,1,'sphere')&~L;
 
@@ -33,12 +26,3 @@ fprintf("OK\n");
 
 p3="C:\Users\GregP\Documents\MATLAB\dicom9";
 saveVoxelVolumeToDicomFile(DTO, p2, p3);
-
-
-
-
-
-
-
-p4="C:\Users\GregP\Documents\MATLAB\binary\KAZAKOVA\L1";
-L1=loadVoxelVolumeFromBinaryFile(p4);
