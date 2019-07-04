@@ -11,8 +11,7 @@
 
 
 
-addpath("C:\Users\GregP\Documents\MATLAB\3dviewer");
-addpath("C:\Users\GregP\Documents\MATLAB\lung_segmentation\lung_segmentation");
+addpath("C:\Users\GregP\Documents\MATLAB\lung-segmentation");
 addpath("C:\Users\GregP\Documents\MATLAB\frangi_filter_version2a");
 addpath("C:\Users\GregP\Documents\MATLAB\bwdistsc");
 addpath("C:\Users\GregP\Documents\MATLAB\viewer3d_version12a\ReadData3D\dicom");

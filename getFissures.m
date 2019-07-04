@@ -1,8 +1,8 @@
 function O = getFissures(V, sigma)
 
-sigma=1;
-V2=V;
-V=CROs;
+%sigma=1;
+%V2=V;
+%V=CROs;
 
 V=single(V);
 

@@ -1,25 +1,17 @@
-
-
-
-
-
-
-
-
-
-
-
+function saveFissuresFromDicomFileToNewDicomFile(srcDicomFolderPath,newDicomFolderPath)
+%srcDicomFolderPath="D:\Tomograms\Chest_CT\PA000002\ST000001\SE000002";
+%newDicomFolderPath="C:\Users\GregP\Documents\MATLAB\dicom2";
 
 addpath("C:\Users\GregP\Documents\MATLAB\lung-segmentation");
 addpath("C:\Users\GregP\Documents\MATLAB\frangi_filter_version2a");
 addpath("C:\Users\GregP\Documents\MATLAB\bwdistsc");
 addpath("C:\Users\GregP\Documents\MATLAB\viewer3d_version12a\ReadData3D\dicom");
-addpath("C:\Users\GregP\Documents\MATLAB\phi-max-skeleton3d-matlab-18c7dc3");
+
 
 %dp="D:\Tomograms\Anonimous - 1516125\Pet Petct_Wholebody_Routine (Adult)\CT WB 1.5 B30f - 4";
 %dp="D:\Tomograms\Chest_CT\PA000001\ST000001\SE000002";
-srcDicomSeriesFolderPath="D:\Tomograms\Chest_CT\PA000003\ST000001\SE000002";
-V=getRescaledDicomVolume(srcDicomSeriesFolderPath);
+
+V=getRescaledDicomVolume(srcDicomFolderPath);
 
 % Reduce the volume to accelerate computing.
 %k=nthroot(50000000/numel(V),3);
@@ -73,10 +65,6 @@ V=CROs;
 
 V=single(V);
 
-%V=niftiread('lung_001.nii');
-%roi=[300,400,200,300,1,300];
-%V=copyRoi(V,roi);s
-%sigma = 1;
 fprintf("Hessian3D\n");
 [Dxx, Dyy, Dzz, Dxy, Dxz, Dyz] = Hessian3D(V,sigma);
 fprintf("eig3volume\n");
@@ -111,39 +99,57 @@ end
 
 
 
-T=~imbinarize(Lambda3,-5);
-s=size(T);
-F9=T;
-for x=1:s(1)
-    F9(x,:,:)=bwareaopen(T(x,:,:),100);
-end
-for y=1:s(2)
-    F9(:,y,:)=bwareaopen(T(:,y,:),30);
-end
-for z=1:s(3)
-    F9(:,:,z)=bwareaopen(T(:,:,z),100);
-end
+F1=~imbinarize(Lambda3,0);
+s=size(F1);
 level_vessel=-400;
 M=threshold(V,level_vessel, false, true);
-F10=M&F9;
+F2=M&F1;
+fprintf("Small object cutting. First stage...\n");
+fprintf("Loop by x...\n");
+for x=1:s(1)
+    F2(x,:,:)=bwareaopen(F2(x,:,:),30);
+end
+fprintf("Loop by y...\n");
+for y=1:s(2)
+    F2(:,y,:)=bwareaopen(F2(:,y,:),15);
+end
+fprintf("Loop by z...\n");
+for z=1:s(3)
+    F2(:,:,z)=bwareaopen(F2(:,:,z),30);
+end
 M2=erode(CRO,3);
-F11=F10&M2;
-F12=erode(F11,2,1,'cube');
-F13=dilate(F12,3,1,'cube');
-F14=getMaxObject(F13);
-F15=F13-F14;
-F16=getMaxObject(F15);
-F17=F14|F16;
+F3=F2&M2;
+F4=F3;%erode(F3,2,1,'cube');
+F5=F4;%dilate(F4,5,1,'cube');
+F6=getMaxObject(F5);
+F7=F5-F6;
+F8=getMaxObject(F7);
+F9=F6|F8;
+fprintf("Small object cutting. Second stage...\n");
+fprintf("Loop by x...\n");
+for x=1:s(1)
+    F9(x,:,:)=bwareaopen(F9(x,:,:),30);
+end
+fprintf("Loop by y...\n");
+for y=1:s(2)
+    F9(:,y,:)=bwareaopen(F9(:,y,:),15);
+end
+fprintf("Loop by z...\n");
+for z=1:s(3)
+    F9(:,:,z)=bwareaopen(F9(:,:,z),30);
+end
+%F10=erode(F9,3,1,'sphere');
+
+
+
+A=int32(F9);
 
 
 
 
 
 
-
-
-
-F=F17;
+F=F9;
 
 
 
@@ -157,43 +163,29 @@ F=F17;
 
 E1=L1&(~erode(L1,3,1,'sphere'));
 E2=L2&(~erode(L2,3,1,'sphere'));
-F1=F&L1|E1;
-F2=F&L2|E2;
-DT1=bwdist(F1);
-DT2=bwdist(F2);
+F01=F&L1|E1;
+F02=F&L2|E2;
+DT1=bwdist(F01);
+DT2=bwdist(F02);
 DTM1=getByMask(DT1,L1);
 DTM2=getByMask(DT2,L2);
+DTM=DTM1+DTM2;
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-DTO1=zeros(size(DTM1),'int32');
-s=size(DTO1);
+DTO=zeros(size(DTM),'int32');
+s=size(DTO);
 for x=1:s(1)
     fprintf("x=%d\n",x);
     for y=1:s(2)
         for z=1:s(3)
-            v1=DTM1(x,y,z);
+            v1=DTM(x,y,z);
             if (v1 ~= 0)
-                DTO1(x,y,z)=v1+300;
+                DTO(x,y,z)=v1+300;
             end
-            %if (F1(x,y,z) ~= 0)
-            %    DTO1(x,y,z)=1524;
-            %end
         end
     end
 end
@@ -209,35 +201,4 @@ fprintf("OK\n");
 
 
 
-
-
-
-DTO2=zeros(size(DTM2),'int32');
-s=size(DTO2);
-for x=1:s(1)
-    fprintf("x=%d\n",x);
-    for y=1:s(2)
-        for z=1:s(3)
-            v1=DTM2(x,y,z);
-            if (v1 ~= 0)
-                DTO2(x,y,z)=v1+300;
-            end
-            %if (F2(x,y,z) ~= 0)
-            %    DTO2(x,y,z)=1524;
-            %end
-        end
-    end
-end
-fprintf("OK\n");
-
-
-
-
-
-
-newDicomSeriesFolderPath1="C:\Users\GregP\Documents\MATLAB\dicom9";
-newDicomSeriesFolderPath2="C:\Users\GregP\Documents\MATLAB\dicom10";
-newDicomSeriesFolderPath3="C:\Users\GregP\Documents\MATLAB\dicom11";
-saveVoxelVolumeToDicomFile(DTO1, srcDicomSeriesFolderPath, newDicomSeriesFolderPath1);
-saveVoxelVolumeToDicomFile(DTO2, srcDicomSeriesFolderPath, newDicomSeriesFolderPath2);
-saveVoxelVolumeToDicomFile(F*1024, srcDicomSeriesFolderPath, newDicomSeriesFolderPath3);
+saveVoxelVolumeToDicomFile(DTO, srcDicomFolderPath, newDicomFolderPath);
