@@ -1,4 +1,4 @@
-function RO = getRespiratoryOrgansFromDicomFolder(dicomFolderPath,cr,ci)
+function [V,RO] = getRespiratoryOrgansFromDicomFolder(dicomFolderPath,cr,ci)
 %{
 
 % Returns the whole respiratory organs volume (lung and airway volume)

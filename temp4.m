@@ -8,13 +8,7 @@
 
 
 
-
-
-addpath("C:\Users\GregP\Documents\MATLAB\lung-segmentation");
-addpath("C:\Users\GregP\Documents\MATLAB\frangi_filter_version2a");
-addpath("C:\Users\GregP\Documents\MATLAB\bwdistsc");
-addpath("C:\Users\GregP\Documents\MATLAB\viewer3d_version12a\ReadData3D\dicom");
-addpath("C:\Users\GregP\Documents\MATLAB\phi-max-skeleton3d-matlab-18c7dc3");
+addpath(pwd+"/frangi_filter_version2a");
 
 %dp="D:\Tomograms\Anonimous - 1516125\Pet Petct_Wholebody_Routine (Adult)\CT WB 1.5 B30f - 4";
 %dp="D:\Tomograms\Chest_CT\PA000001\ST000001\SE000002";

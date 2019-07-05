@@ -1,4 +1,7 @@
-% [LL1,LL2] = getLungLobesFromDicomFolder(dicomFolderPath)
+function LL = getLungLobesFromDicomFolder(srcDicomFolderPath)
 
-dicomFolderPath="D:\Tomograms\Chest_CT\PA000001\ST000001\SE000002";
-
+[V,CRO]=getRespiratoryOrgansFromDicomFolder(srcDicomFolderPath);
+F=getFissures2(V,CRO);
+DT=bwdist(F);
+DT=getByMask(DT,CRO);
+LL=mwatershed(DT);

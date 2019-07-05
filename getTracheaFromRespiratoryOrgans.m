@@ -1,8 +1,8 @@
-function [T,CL,EL1,EL2] = getTracheaFromRespiratoryOrgans(CRO,A,LA)
+function [CL,EL1,EL2,T] = getTracheaFromRespiratoryOrgans(CRO,V)
 
-%Vd=double(V);
-%A=~imbinarize(Vd,-900);
-%LA=~imbinarize(Vd,-300);
+Vd=double(V);
+A=~imbinarize(Vd,-900);
+LA=~imbinarize(Vd,-300);
 
 r1=5;
 ERO=erode(CRO,r1,8);
@@ -31,6 +31,4 @@ CL=CRO&(DL1|DL2)&~DT;
 [Lm,m]=getMaxObject(CL);
 lvl=round(m/10);
 CL=bwareaopen(CL, lvl);
-
-showVoxelVolume(T);
 
