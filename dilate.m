@@ -1,11 +1,11 @@
-function O=dilate(V,r,n,t)
+function O=dilate(V,r,t,n)
 
-if (nargin < 3)
+if (nargin < 4)
     n=1;
 end
 
-if (nargin < 4)
-    t='cube';
+if (nargin < 3)
+    t='sphere';
 end
 
 O=V;

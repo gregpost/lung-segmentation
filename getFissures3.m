@@ -1,4 +1,4 @@
-function F = getFissures2(V,CL,sigma)
+function F = getFissures3(V,CL,sigma,tr,cv,dr)
 
 if (nargin < 2)
     CL=logical(V);
@@ -6,6 +6,18 @@ end
 
 if (nargin < 3)
     sigma=1;
+end
+
+if (nargin < 4)
+    tr=-6;
+end
+
+if (nargin < 5)
+    cv=20;
+end
+
+if (nargin < 6)
+    dr=3;
 end
 
 V=getByMask(V,CL);
@@ -34,14 +46,13 @@ for x=1:vSize(1)
     end
 end
 
-F=~imbinarize(Lambda3,-6);
+F=~imbinarize(Lambda3,tr);
 s=size(F);
 level_vessel=-400;
-M=imbinarize(V,level_vessel);
-F=F&~M;
+M=threshold(V,level_vessel, false, true);
+F=M&F;
 fprintf("Small object cutting. First stage...\n");
 fprintf("Loop by x...\n");
-cv=20;
 for x=1:s(1)
     F(x,:,:)=bwareaopen(F(x,:,:),cv);
 end
@@ -53,6 +64,7 @@ fprintf("Loop by z...\n");
 for z=1:s(3)
     F(:,:,z)=bwareaopen(F(:,:,z),cv);
 end
+F=dilate(F,dr);
 M2=erode(CL,3);
 F=F&M2;
 F1=getMaxObject(F);
